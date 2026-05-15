@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Prisma generated + seed data
+prisma/positions_data.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Fitxers sensibles locals
+credencials.txt
+postgres_connection_string.txt
+*.txt
