@@ -1,22 +1,22 @@
-import { auth } from "@/lib/auth";
+import NextAuth from "next-auth";
+import { authConfig } from "@/lib/auth.config";
 import { NextResponse } from "next/server";
+
+const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const isLoggedIn = !!req.auth;
 
-  // Les rutes /api/auth sempre han de passar (signout, callbacks, etc.)
   if (pathname.startsWith("/api/auth")) {
     return NextResponse.next();
   }
 
-  // Redirigeix usuaris autenticats fora del login
   if (pathname.startsWith("/login")) {
     if (isLoggedIn) return NextResponse.redirect(new URL("/dashboard", req.url));
     return NextResponse.next();
   }
 
-  // Tota la resta requereix autenticació
   if (!isLoggedIn) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
