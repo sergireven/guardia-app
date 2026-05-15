@@ -11,8 +11,8 @@ export default async function DashboardPage() {
   const [users, guardias, vacations, requests, holidays, positions, assignments, dayNotes] = await Promise.all([
     db.user.findMany({ where: { active: true }, orderBy: { name: "asc" }, select: { id:true, name:true, email:true, color:true, initials:true, role:true, guardia:true, active:true } }),
     db.guardia.findMany({ orderBy: { satDate: "asc" } }),
-    db.vacation.findMany({ orderBy: { createdAt: "desc" } }),
-    db.request.findMany({ orderBy: { createdAt: "desc" } }).then(rs => rs.map(r => ({ ...r, createdAt: r.createdAt.toISOString() }))),
+    db.vacation.findMany({ orderBy: { createdAt: "desc" } }).then(vs => vs.map(v => ({ ...v, comment: v.comment ?? undefined }))),
+    db.request.findMany({ orderBy: { createdAt: "desc" } }).then(rs => rs.map(r => ({ ...r, createdAt: r.createdAt.toISOString(), comment: r.comment ?? undefined }))),
     db.holiday.findMany({ orderBy: { date: "asc" } }),
     db.position.findMany({ orderBy: { displayOrder: "asc" } }),
     db.positionAssignment.findMany({ include: { user: { select: { id:true, name:true, color:true, initials:true } }, subUser: { select: { id:true, name:true, color:true, initials:true } } } }),
