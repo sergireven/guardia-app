@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session || (session.user as any).role !== "ADMIN")
     return NextResponse.json({ error: "Sense permisos" }, { status: 403 });
 
   const { status } = await req.json();
-  const id = parseInt(params.id);
+  const { id: idStr } = await params;
+  const id = parseInt(idStr);
   if (isNaN(id)) return NextResponse.json({ error: "ID invàlid" }, { status: 400 });
 
   const request = await db.request.findUnique({ where: { id } });

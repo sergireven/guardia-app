@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session || (session.user as any).role !== "ADMIN")
     return NextResponse.json({ error: "Sense permisos" }, { status: 403 });
 
-  const id = parseInt(params.id);
+  const { id: idStr } = await params;
+  const id = parseInt(idStr);
   const body = await req.json();
   const { name, color, initials, role, guardia, active } = body;
 
@@ -20,11 +21,12 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json(user);
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session || (session.user as any).role !== "ADMIN")
     return NextResponse.json({ error: "Sense permisos" }, { status: 403 });
 
-  await db.user.update({ where: { id: parseInt(params.id) }, data: { active: false } });
+  const { id: idStr } = await params;
+  await db.user.update({ where: { id: parseInt(idStr) }, data: { active: false } });
   return NextResponse.json({ ok: true });
 }
